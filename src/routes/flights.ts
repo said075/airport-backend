@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { scrapeTuzlaFlights } from "../scraper/tuzla";
 import { db, redisClient } from "../services/db";
 
 const router = Router();
@@ -8,18 +7,17 @@ router.get("/tuzla", async (req, res) => {
   try {
     const cacheKey = "flights:tuzla";
     const cached = await redisClient.get(cacheKey);
-
     if (cached) {
       return res.json(JSON.parse(cached));
     }
 
-    const flights = await scrapeTuzlaFlights();
+    const flights = await db.collection("flights").find({ airport: "Tuzla" }).toArray();
+    if (flights.length > 0) {
+      await redisClient.set(cacheKey, JSON.stringify(flights), "EX", 86400);
+      return res.json(flights);
+    }
 
-    // Ubaci u MongoDB
-    await db.collection("flights").insertMany(flights);
-    await redisClient.set(cacheKey, JSON.stringify(flights), "EX", 600); // 10 min cache
-
-    res.json(flights);
+    res.status(503).json({ error: "No flight data. Run the scrape script: npm run scrape:tuzla" });
   } catch (err) {
     console.error("Flights error:", err);
     const message = err instanceof Error ? err.message : "Internal Server Error";
