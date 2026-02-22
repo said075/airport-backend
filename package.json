@@ -9,6 +9,7 @@
     "dev": "ts-node-dev --respawn src/index.ts",
     "scrape:tuzla": "npm run build && node dist/scripts/scrape-tuzla.js",
     "scrape:banjaluka": "npm run build && node dist/scripts/scrape-banjaluka.js",
+    "scrape:mostar": "npm run build && node dist/scripts/scrape-mostar.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

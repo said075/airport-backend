@@ -10,6 +10,7 @@ app.get("/", (req, res) => {
     endpoints: {
       tuzla: "/api/flights/tuzla",
       banjaluka: "/api/flights/banjaluka",
+      mostar: "/api/flights/mostar",
     },
   });
 });

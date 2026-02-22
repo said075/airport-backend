@@ -47,4 +47,26 @@ router.get("/banjaluka", async (req, res) => {
   }
 });
 
+router.get("/mostar", async (req, res) => {
+  try {
+    const cacheKey = "flights:mostar";
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+
+    const flights = await db.collection("flights").find({ airport: "Mostar" }).toArray();
+    if (flights.length > 0) {
+      await redisClient.set(cacheKey, JSON.stringify(flights), "EX", 86400);
+      return res.json(flights);
+    }
+
+    res.status(503).json({ error: "No flight data. Run the scrape script: npm run scrape:mostar" });
+  } catch (err) {
+    console.error("Flights error:", err);
+    const message = err instanceof Error ? err.message : "Internal Server Error";
+    res.status(500).json({ error: "Internal Server Error", detail: message });
+  }
+});
+
 export default router;
