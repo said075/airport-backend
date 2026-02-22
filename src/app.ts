@@ -8,7 +8,8 @@ app.get("/", (req, res) => {
   res.json({
     message: "Airport backend API",
     endpoints: {
-      flights: "/api/flights/tuzla",
+      tuzla: "/api/flights/tuzla",
+      banjaluka: "/api/flights/banjaluka",
     },
   });
 });
